@@ -152,7 +152,7 @@
     charts.mpgTrendCombined(d3.select('#mpg-trend-combined'), [].concat(data.car.data, data.truck.data), function (d3svg) {
       d3svg
         .classed('line-chart', true)
-        .select('.line')
+        .selectAll('.line')
           .attr('stroke-width', 1);
 
       d3svg

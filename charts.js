@@ -279,15 +279,14 @@ var charts = (function () {
     var xScale = d3.scaleTime().rangeRound([0, width]);
     var yScale = d3.scaleLinear().rangeRound([height, 0]);
 
-    // create line for Honda
-    var hondaLine = d3.line()
-      .x(function(d) { if (d.carName.toLowerCase().indexOf('honda') > -1) return xScale(d.dateAdded); })
-      .y(function(d) { if (d.carName.toLowerCase().indexOf('honda') > -1) return yScale(d.mpg); });
-
-    // create line for Tacoma
-    var tacomaLine = d3.line()
-      .x(function(d) { if (d.carName.toLowerCase().indexOf('tacoma') > -1) return xScale(d.dateAdded); })
-      .y(function(d) { if (d.carName.toLowerCase().indexOf('tacoma') > -1) return yScale(d.mpg); });
+    // create a line model
+    var line = d3.line()
+      .x(function(d) {
+        return xScale(d.dateAdded);
+      })
+      .y(function(d) {
+        return yScale(d.mpg);
+      });
 
     // set the domain
     xScale.domain(d3.extent(data, function(d) { return d.dateAdded; }));
@@ -317,32 +316,36 @@ var charts = (function () {
 
     // add the paths that represents the data
     g.append('path')
-      .datum(data)
+      .datum(data.filter(function(d) {
+        return (d.carName.toLowerCase().indexOf('accord') > -1);
+      }))
       .attr('fill', 'none')
       .attr('class', 'line line-honda')
       .attr('stroke-linejoin', 'round')
       .attr('stroke-linecap', 'round')
       .attr('stroke-width', 1.5)
-      .attr('d', hondaLine);
+      .attr('d', line);
 
     g.append('path')
-      .datum(data)
+      .datum(data.filter(function(d) {
+        return (d.carName.toLowerCase().indexOf('tacoma') > -1);
+      }))
       .attr('fill', 'none')
       .attr('class', 'line line-tacoma')
       .attr('stroke-linejoin', 'round')
       .attr('stroke-linecap', 'round')
       .attr('stroke-width', 1.5)
-      .attr('d', tacomaLine);
+      .attr('d', line);
 
     // add some dots to the line for each data point
-    /*g.selectAll('.dot')
+    g.selectAll('.dot')
       .data(data)
       .enter().append('circle')
       .style('fill', 'firebrick')
       .attr('class', 'dot')
       .attr('cx', line.x())
       .attr('cy', line.y())
-      .attr('r', 1.5);*/
+      .attr('r', 1.5);
 
     if (typeof formatter === 'function') {
       return formatter(d3svg);
