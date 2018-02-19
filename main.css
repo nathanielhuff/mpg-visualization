@@ -1,0 +1,124 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  font-family: "Merriweather", Georgia, serif;
+  font-size: 17px;
+  line-height: 1.618;
+  background-color: whitesmoke;
+}
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-family: "Lato", Tahoma, serif;
+  font-weight: 700;
+  line-height: normal;
+}
+h1 {
+  font-size: 60px;
+  margin: 12px 0;
+}
+h2 {
+  font-size: 36px;
+  margin: 9px 0;
+}
+h3 {
+  font-size: 24px;
+  margin: 6px 0;
+}
+h4 {
+  font-size: 21px;
+  margin: 4px 0;
+}
+h5 {
+  font-size: 19.5px;
+  margin: 3px 0;
+}
+h6 {
+  font-size: 18px;
+  margin: 3px 0;
+}
+* {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sixing: border-box;
+}
+::-moz-selection {
+  background: #428ed7;
+  text-shadow: none;
+}
+::selection {
+  background: #428ed7;
+  text-shadow: none;
+}
+.cf {
+  *zoom: 1;
+}
+.cf:before,
+.cf:after {
+  content: " ";
+  display: table;
+}
+.cf:after {
+  clear: both;
+}
+.container {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  -ms-transform: translateX(-50%) translateY(-50%);
+}
+.wrapper {
+  width: 96%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+p {
+  color: #091a2a;
+}
+a {
+  -webkit-transition: all ease 0.4s;
+  -moz-transition: all ease 0.4s;
+  -ms-transition: all ease 0.4s;
+  -o-transition: all ease 0.4s;
+  transition: all ease 0.4s;
+}
+a {
+  border-bottom: 1px dotted #2467A8;
+  padding-bottom: 2px;
+  text-decoration: none;
+  color: #2467A8;
+}
+a:hover,
+a:focus {
+  color: #428ed7;
+  border-bottom: none;
+}
+
+.bar-chart .bar {
+  transition: all 0.4s ease;
+  fill: dodgerblue;
+}
+.bar-chart .bar:hover {
+  fill: navy;
+}
+.bar-chart .axis .tick text,
+.line-chart .axis .tick text {
+  font-weight: bold;
+}
+.bar-chart .axis.axis-y .tick text,
+.line-chart .axis.axis-y .tick text {
+  font-size: 12px;
+}
+
+.line-chart .line {
+  stroke: dodgerblue;
+}
