@@ -40,8 +40,6 @@ var charts = (function () {
       });
     });
 
-    console.log(data);
-
     var xScale = d3.scaleBand().rangeRound([0, width]).padding(0.1);
     var yScale = d3.scaleLinear().rangeRound([height, 0]);
 
@@ -439,12 +437,92 @@ var charts = (function () {
 
   }
 
+  function topNTanks (d3svg, data, number, formatter) {
+    var margin = {
+      top: 20,
+      right: 20,
+      bottom: 50,
+      left: 60
+    };
+    var width = +d3svg.attr('width') - margin.left - margin.right;
+    var height = +d3svg.attr('height') - margin.top - margin.bottom;
+
+    // filter the data the way we want it
+    var maxMiles = (function (miles, num) {
+      var maxN = [];
+
+      for (var i=0,ii=num; i<ii; ++i) {
+        var max = miles.reduce(function(a, b) {
+          return Math.max(a, b);
+        });
+        maxN.push(max);
+        miles.splice(miles.indexOf(max), 1);
+      }
+
+      return maxN;
+
+    })(data.map(function (d) { return d.miles }), number);
+
+    data = data.filter(function (d) {
+      return (maxMiles.indexOf(d.miles) > -1);
+    }).sort(function (a,b) {
+      if (a.dateAdded < b.dateAdded) return -1;
+      if (a.dateAdded > b.dateAdded) return 1;
+      return 0;
+    }).map(function (d) {
+      return {
+        dateAdded: d3.timeFormat('%Y-%m-%d')(d.dateAdded),
+        miles: d.miles
+      };
+    });
+
+    console.log(data);
+
+    var xScale = d3.scaleBand().rangeRound([0, width]).padding(0.1);
+    var yScale = d3.scaleLinear().rangeRound([height, 0]);
+
+    xScale.domain(data.map(function (d) { return d.dateAdded; }));
+    yScale.domain([0, d3.max(data, function (d) { return d.miles })]).nice();
+
+    var xAxis = d3.axisBottom(xScale);
+    var yAxis = d3.axisLeft(yScale)
+      .tickFormat(d3.format('.1f'));
+
+    var g = d3svg.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    g.append('g')
+      .attr('class', 'axis axis-x')
+      .attr('transform', 'translate(0,' + height + ')')
+      .call(xAxis);
+
+    g.append('g')
+        .attr('class', 'axis axis-y')
+        .call(yAxis)
+      .append('text')
+        .attr('transform', 'rotate(-90)');
+
+    g.selectAll('.bar')
+      .data(data)
+      .enter().append('rect')
+        .attr('class', 'bar')
+        .attr('x', function (d) { return xScale(d.dateAdded); })
+        .attr('y', function (d) { return yScale(d.miles); })
+        .attr('width', xScale.bandwidth())
+        .attr('height', function (d) { return height - yScale(d.miles); });
+
+    if (typeof formatter === 'function') {
+      formatter(d3svg);
+    }
+  }
+
   return {
     costPerMonth: costPerMonth,
     pricePerGallon: pricePerGallon,
     mpgTrendSingle: mpgTrendSingle,
     mpgTrendCombined: mpgTrendCombined,
-    milesPerFill: milesPerFill
+    milesPerFill: milesPerFill,
+    topNTanks: topNTanks
   };
 
 })();

@@ -162,6 +162,24 @@
         .attr('dx', -30);
     });
 
+    charts.topNTanks(d3.select('#furthest-tanks-car'), data.car.data, 5, function (d3svg) {
+      d3svg
+        .classed('bar-chart', true)
+        .selectAll('.axis-x .tick text')
+          .attr('transform', 'rotate(-45, 0, 0)')
+          .attr('dy', 3)
+          .attr('dx', -30);
+    });
+
+    charts.topNTanks(d3.select('#furthest-tanks-truck'), data.truck.data, 5, function (d3svg) {
+      d3svg
+        .classed('bar-chart', true)
+        .selectAll('.axis-x .tick text')
+          .attr('transform', 'rotate(-45, 0, 0)')
+          .attr('dy', 3)
+          .attr('dx', -30);
+    });
+
   }
 
   function setData (source, fileData) {
