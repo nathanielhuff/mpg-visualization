@@ -180,6 +180,19 @@
           .attr('dx', -30);
     });
 
+    charts.milesPerFillCombined(d3.select('#miles-per-fill-combined'), [].concat(data.car.data, data.truck.data), function (d3svg) {
+      d3svg
+        .classed('line-chart', true)
+        .select('.line')
+          .attr('stroke-width', 1);
+
+      d3svg
+        .selectAll('.axis-x .tick text')
+        .attr('transform', 'rotate(-60, 0, 0)')
+        .attr('dy', 3)
+        .attr('dx', -30);
+    });
+
   }
 
   function setData (source, fileData) {

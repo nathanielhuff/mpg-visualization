@@ -359,7 +359,6 @@ var charts = (function () {
     };
     var width = +d3svg.attr('width') - margin.left - margin.right;
     var height = +d3svg.attr('height') - margin.top - margin.bottom;
-    var yearWeeks = {};
 
     // sort by date added, ascending
     data.sort(function (a,b) {
@@ -435,6 +434,98 @@ var charts = (function () {
       return formatter(d3svg);
     }
 
+  }
+
+  function milesPerFillCombined (d3svg, data, formatter) {
+    var margin = {
+      top: 20,
+      right: 20,
+      bottom: 50,
+      left: 60
+    };
+    var width = +d3svg.attr('width') - margin.left - margin.right;
+    var height = +d3svg.attr('height') - margin.top - margin.bottom;
+
+    // sort by date added, ascending
+    data.sort(function (a,b) {
+      if (a.dateAdded < b.dateAdded) return -1;
+      if (a.dateAdded > b.dateAdded) return 1;
+      return 0;
+    });
+
+    // d3.timeFormat('%Y-%m-%d')(d.dateAdded)
+
+    // scales
+    var xScale = d3.scaleTime().rangeRound([0, width]);
+    var yScale = d3.scaleLinear().rangeRound([height, 0]);
+
+    // create a line
+    var line = d3.line()
+      .x(function(d) { return xScale(d.dateAdded); })
+      .y(function(d) { return yScale(d.miles); });
+
+    // set the domain
+    xScale.domain(d3.extent(data, function(d) { return d.dateAdded; }));
+    yScale.domain(d3.extent(data, function(d) { return d.miles; })).nice();
+
+    // create the outer g tag
+    var g = d3svg.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // add the x-axis
+    var xAxis = d3.axisBottom(xScale)
+      .ticks(d3.timeSunday.every(2))
+      .tickFormat(d3.timeFormat('%Y-%U'));
+
+    g.append('g')
+      .attr('class', 'axis axis-x')
+      .attr('transform', 'translate(0,' + height + ')')
+      .call(xAxis);
+
+    // add the y-axis
+    var yAxis = d3.axisLeft(yScale)
+      .tickFormat(d3.format('.1f'));
+
+    g.append('g')
+      .attr('class', 'axis axis-y')
+      .call(yAxis);
+
+    // add the paths for each set of data
+    g.append('path')
+      .datum(data.filter(function(d) {
+        return (d.carName.toLowerCase().indexOf('accord') > -1);
+      }))
+      .attr('fill', 'none')
+      .attr('class', 'line line-honda')
+      .attr('stroke-linejoin', 'round')
+      .attr('stroke-linecap', 'round')
+      .attr('stroke-width', 1.5)
+      .attr('d', line);
+
+    g.append('path')
+      .datum(data.filter(function(d) {
+        return (d.carName.toLowerCase().indexOf('tacoma') > -1);
+      }))
+      .attr('fill', 'none')
+      .attr('class', 'line line-tacoma')
+      .attr('stroke-linejoin', 'round')
+      .attr('stroke-linecap', 'round')
+      .attr('stroke-width', 1.5)
+      .attr('d', line);
+
+    // add some dots to the line for each data point
+    g.selectAll('.dot')
+      .data(data)
+      .enter().append('circle')
+      .style('fill', 'firebrick')
+      .attr('class', 'dot')
+      .attr('cx', line.x())
+      .attr('cy', line.y())
+      .attr('r', 1.5);
+
+    if (typeof formatter === 'function') {
+      return formatter(d3svg);
+    }
   }
 
   function topNTanks (d3svg, data, number, formatter) {
@@ -522,6 +613,7 @@ var charts = (function () {
     mpgTrendSingle: mpgTrendSingle,
     mpgTrendCombined: mpgTrendCombined,
     milesPerFill: milesPerFill,
+    milesPerFillCombined: milesPerFillCombined,
     topNTanks: topNTanks
   };
 
