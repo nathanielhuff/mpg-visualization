@@ -193,6 +193,21 @@
         .attr('dx', -30);
     });
 
+    charts.daysBetweenFills(d3.select('#days-between-fills-car'), data.car.data, function (d3svg) {
+      d3svg
+        .classed('bar-chart', true);
+    });
+
+    charts.daysBetweenFills(d3.select('#days-between-fills-truck'), data.truck.data, function (d3svg) {
+      d3svg
+        .classed('bar-chart', true);
+    });
+
+    charts.daysBetweenFills(d3.select('#days-between-fills-combined'), [].concat(data.car.data, data.truck.data), function (d3svg) {
+      d3svg
+        .classed('bar-chart', true);
+    });
+
   }
 
   function setData (source, fileData) {

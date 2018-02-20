@@ -607,6 +607,93 @@ var charts = (function () {
     }
   }
 
+  function daysBetweenFills (d3svg, data, formatter) {
+    var margin = {
+      top: 20,
+      right: 20,
+      bottom: 50,
+      left: 60
+    };
+    var width = +d3svg.attr('width') - margin.left - margin.right;
+    var height = +d3svg.attr('height') - margin.top - margin.bottom;
+    var buckets = {};
+
+    // sort by date added, ascending
+    data.sort(function (a,b) {
+      if (a.dateAdded < b.dateAdded) return -1;
+      if (a.dateAdded > b.dateAdded) return 1;
+      return 0;
+    });
+
+    // get the data we want
+    function daysBetween (d1, d2) {
+      return Math.round(Math.abs((d1.getTime() - d2.getTime())/(24*60*60*1000)));
+    }
+
+    for (var i=0,ii=data.length; i<ii; ++i) {
+      if (i === 0) {
+        continue;
+      }
+
+      var db = daysBetween(data[i].dateAdded, data[i-1].dateAdded);
+
+      if (!buckets[db]) {
+        buckets[db] = 0;
+      }
+
+      buckets[db]++;
+    }
+
+    data = [];
+
+    Object.keys(buckets).forEach(function (bucket) {
+      data.push({
+        numDays: bucket,
+        numObservations: buckets[bucket]
+      });
+    });
+
+    console.log(data);
+
+    var xScale = d3.scaleBand().rangeRound([0, width]).padding(0.1);
+    var yScale = d3.scaleLinear().rangeRound([height, 0]);
+
+    xScale.domain(data.map(function (d) { return d.numDays; }));
+    yScale.domain([0, d3.max(data, function (d) { return d.numObservations })]).nice();
+
+    var xAxis = d3.axisBottom(xScale);
+    var yAxis = d3.axisLeft(yScale);
+      //.tickFormat(d3.format('$.2f'));
+
+    var g = d3svg.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    g.append('g')
+      .attr('class', 'axis axis-x')
+      .attr('transform', 'translate(0,' + height + ')')
+      .call(xAxis);
+
+    g.append('g')
+        .attr('class', 'axis axis-y')
+        .call(yAxis)
+      .append('text')
+        .attr('transform', 'rotate(-90)');
+
+    g.selectAll('.bar')
+      .data(data)
+      .enter().append('rect')
+        .attr('class', 'bar')
+        .attr('x', function (d) { return xScale(d.numDays); })
+        .attr('y', function (d) { return yScale(d.numObservations); })
+        .attr('width', xScale.bandwidth())
+        .attr('height', function (d) { return height - yScale(d.numObservations); });
+
+    if (typeof formatter === 'function') {
+      return formatter(d3svg);
+    }
+
+  }
+
   return {
     costPerMonth: costPerMonth,
     pricePerGallon: pricePerGallon,
@@ -614,7 +701,8 @@ var charts = (function () {
     mpgTrendCombined: mpgTrendCombined,
     milesPerFill: milesPerFill,
     milesPerFillCombined: milesPerFillCombined,
-    topNTanks: topNTanks
+    topNTanks: topNTanks,
+    daysBetweenFills: daysBetweenFills
   };
 
 })();
